@@ -1,6 +1,9 @@
+// left and right x positions for drawing the palette and checking if the
+//    mouse is inside the palette region.
 let palette_l = 1, palette_r = 21;
 
 function setup() {
+  // Creating the canvas and centering it
   let c = createCanvas(600, 375);
   c.position((windowWidth / 2) - (width / 2), (windowHeight / 2) - (height / 2));
   background(230);
@@ -10,7 +13,7 @@ function setup() {
 
   // Set the default color to black
   stroke(0, 0, 0);
-  strokeWeight(5);
+  strokeWeight(3);
 }
 
 function mousePressed() {
