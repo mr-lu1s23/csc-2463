@@ -38,16 +38,19 @@ function draw() {
   background(220);
   guy_character.draw();
   green_character.draw();
+  robot_character.draw();
 }
 
 function keyPressed() {
   guy_character.keyPressed();
   green_character.keyPressed();
+  robot_character.keyPressed();
 }
 
 function keyReleased() {
   guy_character.keyReleased();
   green_character.keyReleased();
+  robot_character.keyReleased();
 }
 
 class Character {
