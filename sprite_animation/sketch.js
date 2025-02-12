@@ -1,10 +1,13 @@
+// Defining variables that the images will be stored into
 let guy;
 let green;
 let robot;
+// Defining variables that the characters will be stored into
 let guy_character;
 let green_character;
 let robot_character;
 
+// Loading images
 function preload() {
   guy = loadImage("media/SpelunkyGuy.png");
   green = loadImage("media/Green.png");
@@ -15,18 +18,21 @@ function setup() {
   createCanvas(400, 400);
   imageMode(CENTER);
 
+  // Setting up Spelunky Guy character
   guy_character = new Character(random(0, width - 80), random(0, height - 80));
   guy_character.addAnimation("idle", new SpriteAnimation(guy, 0, 0, 1));
   guy_character.addAnimation("walk_right", new SpriteAnimation(guy, 1, 0, 8));
   guy_character.addAnimation("walk_left", new SpriteAnimation(guy, 1, 0, 8));
   guy_character.currentAnimation = "idle";
 
+  // Setting up Green character
   green_character = new Character(random(0, width - 80), random(0, height - 80));
   green_character.addAnimation("idle", new SpriteAnimation(green, 0, 0, 1));
   green_character.addAnimation("walk_right", new SpriteAnimation(green, 1, 0, 8));
   green_character.addAnimation("walk_left", new SpriteAnimation(green, 1, 0, 8));
   green_character.currentAnimation = "idle";
 
+  // Setting up Robot character
   robot_character = new Character(random(0, width - 80), random(0, height - 80));
   robot_character.addAnimation("idle", new SpriteAnimation(robot, 0, 0, 1));
   robot_character.addAnimation("walk_right", new SpriteAnimation(robot, 1, 0, 8));
@@ -59,7 +65,7 @@ class Character {
     this.y = y;
     this.currentAnimation = null;
     this.animations = [];
-    this.isFlipped = false;
+    this.isFlipped = false; // Controls whether the character sprite is flipped given the direction pressed
   }
 
   addAnimation(key, animation) {
@@ -101,6 +107,7 @@ class Character {
 
   keyReleased() {
     this.currentAnimation = "idle";
+    // Make sure the sprite stands in the same direction as the previous walking animation
     this.animations[this.currentAnimation].flipped = this.isFlipped;
   }
 }
