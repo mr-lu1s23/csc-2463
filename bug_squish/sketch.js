@@ -22,7 +22,7 @@ function setup() {
   angleMode(DEGREES);
 
   // Creating the bugs
-  for (i = 0; i < 20; i++){
+  for (i = 0; i < 30; i++){
     bugs[i] = new Bug(random(32, width - 32), random(32, height - 32));
     bugs[i].addAnimation("walk", new SpriteAnimation(bug, 0, 0, 4));
     bugs[i].addAnimation("squish", new SpriteAnimation(bug, 4, 0, 1));
