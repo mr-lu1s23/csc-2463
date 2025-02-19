@@ -1,14 +1,16 @@
+// Different states that the game will be in
 let GameStates = Object.freeze({
   START: "start",
   PLAY: "play",
   END: "end"
 });
+// Dictates the behaviour of the game at the given state
 let gameState = GameStates.START
-let score = 0;
-let time = 30;
+let score = 0; // Increments for every bug squished
+let time = 30; // Time in seconds to squish as much bugs as possible
 
-let bug;
-let bugs = [];
+let bug; // Holds the bug spritesheet
+let bugs = []; // Holds all the bugs that will be in the game
 
 function preload() {
   bug = loadImage("media/bug.png");
@@ -19,8 +21,9 @@ function setup() {
   imageMode(CENTER);
   angleMode(DEGREES);
 
+  // Creating the bugs
   for (i = 0; i < 20; i++){
-    bugs[i] = new Bug(random(64, width - 64), random(64, height - 64));
+    bugs[i] = new Bug(random(32, width - 32), random(32, height - 32));
     bugs[i].addAnimation("walk", new SpriteAnimation(bug, 0, 0, 4));
     bugs[i].addAnimation("squish", new SpriteAnimation(bug, 4, 0, 1));
     bugs[i].current_animation = "walk";
@@ -38,7 +41,7 @@ function draw() {
       break;
     case GameStates.PLAY:
       for (i = 0; i < bugs.length; i++) {
-        bugs[i].speed = 1 + 0.5 * score;
+        bugs[i].speed = 1 + 0.5 * score; // Making the bugs faster as more bugs are squished
         bugs[i].draw();
       }
 
@@ -53,7 +56,7 @@ function draw() {
       {
         gameState = GameStates.END
       }
-      break
+      break;
     case GameStates.END:
       textAlign(CENTER, CENTER);
       textSize(18);
@@ -70,10 +73,6 @@ function keyPressed(){
       {
         gameState = GameStates.PLAY;
       }
-    case GameStates.PLAY:
-      break;
-    case GameStates.END:
-      break;
   }
 }
 
@@ -104,20 +103,23 @@ class Bug {
     let animation = this.animations[this.current_animation];
     if (animation) {
       if (this.current_animation == "walk") {
+        // Use sin() and cos() to move the bug appropriately
+        // sin() and cos() are used weirdly here due to how the sprite is oriented
         this.y += -cos(this.rotation) * this.speed;
         this.x += sin(this.rotation) * this.speed;
 
-        if (this.y <= -64 && (this.rotation < 90 || this.rotation > 270)) {
+        // If the bug leaves the screen, wrap it around to the opposite side
+        if (this.y <= -64 && (this.rotation < 90 || this.rotation > 270)) { // moving up
           this.y += height + 128;
         }
-        else if (this.y >= height + 64 && this.rotation > 90 && this.rotation < 270) {
+        else if (this.y >= height + 64 && this.rotation > 90 && this.rotation < 270) { // moving down
           this.y -= height + 128;
         }
 
-        if (this.x >= width + 64 && this.rotation > 0 && this.rotation < 180) {
+        if (this.x >= width + 64 && this.rotation > 0 && this.rotation < 180) { // moving right
           this.x -= width + 128;
         }
-        else if (this.x <= -64 && this.rotation < 360 && this.rotation > 180) {
+        else if (this.x <= -64 && this.rotation < 360 && this.rotation > 180) { // moving left
           this.x += width + 128;
         }
       }
@@ -132,6 +134,7 @@ class Bug {
   mousePressed() {
     switch(this.current_animation){
       case "walk":
+        // Is the mouse within a 30 pixel radius of the bug?
         let a2 = pow(this.x - mouseX, 2);
         let b2 = pow(this.y - mouseY, 2);
         let c = sqrt(a2 + b2);
