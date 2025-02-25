@@ -15,13 +15,13 @@ function setup() {
   createCanvas(400, 400);
   textSize(16);
   button1 = createButton("Boxed Tissue");
-  button1.position(10, 10);
+  button1.position(10, 20);
   button2 = createButton("Grand Piano Dang-Dang");
-  button2.position(200, 10);
+  button2.position(200, 20);
   button3 = createButton("Keychron K10 Space Bar");
-  button3.position(10, 50);
+  button3.position(10, 45);
   button4 = createButton("Pan Hit");
-  button4.position(200, 50);
+  button4.position(200, 45);
   button1.mousePressed(() => {samples.player("boxed_tissue").start()});
   button2.mousePressed(() => {samples.player("grand_piano").start()});
   button3.mousePressed(() => {samples.player("keychron").start()});
@@ -33,5 +33,6 @@ function setup() {
 
 function draw() {
   background(220);
+  text("Samples:", 10, 15);
   text("Delay Time: " + delTimeSlider.value(), 10, 100);
 }
