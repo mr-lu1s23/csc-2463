@@ -13,15 +13,15 @@ let keynotes = {
 
 function setup() {
   createCanvas(400, 400);
-  filter = new Tone.Filter(2000, "lowpass").toDestination();
+  filter = new Tone.Filter(750, "lowpass").toDestination();
   effect = new Tone.Reverb(3).connect(filter);
   synth = new Tone.PolySynth().connect(effect);
   synth.set({
     envelope: {
-      attack : 0.9,
+      attack : 1,
       decay : 0.2,
       sustain : 0.7,
-      release : 1.5,
+      release : 2,
     }
   })
   textSize(14);
