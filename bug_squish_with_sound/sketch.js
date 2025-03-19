@@ -12,8 +12,17 @@ let time = 30; // Time in seconds to squish as much bugs as possible
 let bug; // Holds the bug spritesheet
 let bugs = []; // Holds all the bugs that will be in the game
 
+// Synths and parts for the synths
+let bass_synth, melody_synth, main_part_bass, main_part_mel;
+let squish; // Squish sound effect
+let play_squish; // Avoids error when multiple bugs get squished at once
+//                    and the game tries to play the sample multiple
+//                    times at once.
+let default_bpm = 180;
+
 function preload() {
   bug = loadImage("media/bug.png");
+  squish = new Tone.Player('media/squitch.wav').toDestination();
 }
 
 function setup() {
@@ -28,6 +37,90 @@ function setup() {
     bugs[i].addAnimation("squish", new SpriteAnimation(bug, 4, 0, 1));
     bugs[i].current_animation = "walk";
   }
+
+  // Setting up the sound
+  Tone.Transport.timeSignature = [3, 4];
+  Tone.Transport.bpm.value = default_bpm;
+  bass_synth = new Tone.PolySynth(Tone.Synth, {
+    oscillator:
+    {
+      type: 'triangle',
+      volume: -8
+    },
+    envelope:
+    {
+      attack: 0.025,
+      release: 2
+    }
+  }).toDestination();
+  melody_synth = new Tone.PolySynth(Tone.Synth, {
+    oscillator:
+    {
+      type: 'sine',
+      volume: -12
+    },
+    envelope:
+    {
+      attack: 0.1,
+      decay: 0.25,
+      sustain: 0.85,
+      release: 0.25
+    }
+  }).toDestination();
+  main_part_bass = new Tone.Part(((time, value) => {
+      bass_synth.triggerAttackRelease(value.note, value.dur, time);
+    }),
+    [
+      {time: 0, note: 'C4', dur: '16n'},
+      {time: '0:1', note: 'E4', dur: '16n'},
+      {time: '0:2', note: 'E4', dur: '16n'},
+      {time: '1:0', note: 'C4', dur: '16n'},
+      {time: '1:1', note: 'E4', dur: '16n'},
+      {time: '1:2', note: 'E4', dur: '16n'},
+      {time: '2:0', note: 'F3', dur: '16n'},
+      {time: '2:1', note: 'A3', dur: '16n'},
+      {time: '2:2', note: 'A3', dur: '16n'},
+      {time: '3:0', note: 'F3', dur: '16n'},
+      {time: '3:1', note: 'A3', dur: '16n'},
+      {time: '3:2', note: 'B3', dur: '16n'},
+    ]
+  );
+  main_part_bass.loop = true;
+  main_part_bass.loopEnd = '4m';
+  main_part_mel = new Tone.Part(((time, value) => {
+      melody_synth.triggerAttackRelease(value.note, value.dur, time);
+    }),
+    [
+      {time: '4:0', note: 'C5', dur: '2n'},
+      {time: '5:0', note: 'A4', dur: '2n'},
+      {time: '6:0', note: 'F4', dur: '4n'},
+      {time: '6:1', note: 'G4', dur: '4n'},
+      {time: '6:2', note: 'A4', dur: '4n'},
+      {time: '7:0', note: 'G4', dur: '2n'},
+      {time: '8:0', note: 'C5', dur: '2n'},
+      {time: '9:0', note: 'A4', dur: '2n'},
+      {time: '10:0', note: 'F4', dur: '4n'},
+      {time: '10:1', note: 'G4', dur: '4n'},
+      {time: '10:2', note: 'A4', dur: '4n'},
+      {time: '11:0', note: 'B4', dur: '2n'},
+      {time: '12:0', note: 'C5', dur: '2n'},
+      {time: '13:0', note: 'E5', dur: '2n'},
+      {time: '14:0', note: 'D5', dur: '4n'},
+      {time: '14:1', note: 'C5', dur: '4n'},
+      {time: '14:2', note: 'A4', dur: '4n'},
+      {time: '15:0', note: 'G4', dur: '2n'},
+      {time: '16:0', note: 'F4', dur: '4n'},
+      {time: '16:1', note: 'G4', dur: '4n'},
+      {time: '16:2', note: 'A4', dur: '4n'},
+      {time: '17:0', note: 'A4', dur: '4n'},
+      {time: '17:1', note: 'B4', dur: '4n'},
+      {time: '17:2', note: 'D5', dur: '4n'},
+      {time: '18:0', note: 'C5', dur: '1n'}
+    ]
+  );
+  main_part_mel.loop = true;
+  main_part_mel.loopEnd = '20m';
+  play_squish = false;
 }
 
 function draw() {
@@ -54,7 +147,14 @@ function draw() {
       time -= deltaTime / 1000;
       if (time <= 0)
       {
-        gameState = GameStates.END
+        gameState = GameStates.END;
+        Tone.Transport.bpm.value = default_bpm;
+      }
+
+      if (play_squish)
+      {
+        squish.start();
+        play_squish = false;
       }
       break;
     case GameStates.END:
@@ -72,6 +172,9 @@ function keyPressed(){
       if (keyCode == ENTER)
       {
         gameState = GameStates.PLAY;
+        Tone.Transport.start();
+        main_part_bass.start();
+        main_part_mel.start();
       }
   }
 }
@@ -141,6 +244,8 @@ class Bug {
         if (c <= 30){
           this.current_animation = "squish";
           score++;
+          Tone.Transport.bpm.value += 10;
+          play_squish = true;
         }
     }
   }
